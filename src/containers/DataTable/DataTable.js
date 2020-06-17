@@ -22,15 +22,17 @@ const DataTable = props => {
     useEffect(() => {
         getAllUnits()
     }, [getAllUnits])
+
     const addUnitHandler = () => {
         setOpenForm(true)
+        setUnitData({})
         setActionFlag('add')
     }
+    
     const updateUnitHandler = (unit) => {
         setOpenForm(true)
         setUnitData(unit)
         setActionFlag('update')
-
     }
 
     return (
@@ -81,7 +83,7 @@ const DataTable = props => {
                     اضافة وحدة جديدة
                 </button>
             </div>
-            {openForm ? <Modal action={actionFlag} unit={unitData} /> : null}
+            {openForm ? <Modal action={actionFlag} unit={unitData} onClose={()=> setOpenForm(false)} /> : null}
         </div>
     );
 }

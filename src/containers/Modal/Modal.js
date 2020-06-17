@@ -3,13 +3,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Form from '../Form/Form'
 
-const rand = () => {
-    return Math.round(Math.random() * 20) - 10;
-}
-
 const getModalStyle = () => {
-    const top = 50 + rand();
-    const left = 50 + rand();
+    const top = 50;
+    const left = 50;
     return {
         top: `${top}%`,
         left: `${left}%`,
@@ -28,19 +24,21 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
 const SimpleModal = (props) => {
     const classes = useStyles();
     const [modalStyle] = useState(getModalStyle);
     const [show, setShow] = useState(true);
 
     const handleClose = () => {
+        console.log(props);
         setShow(false);
-
+        props.onClose();
     };
 
     const body = (
         <div style={modalStyle} className={classes.paper}>
-            <Form action={props.action} unit={props.unit} />
+            <Form action={props.action} unit={props.unit} onSubmit={()=> { handleClose() } }/>
         </div>
     );
 

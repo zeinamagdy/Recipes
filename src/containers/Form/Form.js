@@ -22,18 +22,20 @@ const Form = (props) => {
         setTask(newTask)
     }
 
-    const submitHandler = () => {
+    const submitHandler = (e) => {
+        e.preventDefault()
         if (props.action === 'add') {
             props.addUnit(task);
         } else if (props.action === 'update') {
             const updatedTask = { ...task, id: props.unit.id }
             props.updateUnit(updatedTask)
         }
+        props.onSubmit();
     }
 
     return (
         <div className={classes.form_container}>
-            <form className={classes.form} onSubmit={() => submitHandler()}>
+            <form className={classes.form} onSubmit={(e) => submitHandler(e)}>
                 <input
                     type='text'
                     className={classes.form_input}
