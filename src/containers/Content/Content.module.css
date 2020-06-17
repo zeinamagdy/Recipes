@@ -1,0 +1,31 @@
+.content {
+    background-color: #f9fdff;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-left: 75px;
+}
+
+.content_header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+}
+
+.content_search_input {
+    border: transparent;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 8px;
+    box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.06);
+}
+
+.content_search_input:focus {
+    outline: none;
+}
+
+.content_title {
+    font-weight: 500;
+    font-size: 20px;
+    font-family: auto;
+}
