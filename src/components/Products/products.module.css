@@ -5,7 +5,11 @@
     flex-direction: column;
     margin-left: 75px;
 }
-
+.main {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 77%;
+  }
 .content_header {
     display: flex;
     justify-content: space-between;

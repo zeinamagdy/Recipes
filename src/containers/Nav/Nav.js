@@ -1,49 +1,39 @@
 import React from 'react';
 import userImag from '../../assests/users/user.jpg'
-import { faHome, faChartPie, faBriefcaseMedical, faBuilding } from "@fortawesome/free-solid-svg-icons";
+import { NavLink } from 'react-router-dom'
+import { faHome, faChartPie } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as classes from './Nav.module.css'
 
 const Nav = () => {
-   
+    const user = {
+        user_name: 'Zeinab Mohamed',
+        email: 'zainab@test.com',
+        img: userImag
+    }
+    const navItems = [
+        { name: 'Propducts', icon: faChartPie, path: '/' },
+        { name: 'Users', icon: faHome, path: '/auth' }
+    ]
+    const items = navItems.map(item =>
+        <li className={classes.side_nav__item} key={item.name}>
+            <FontAwesomeIcon icon={item.icon} className={classes.margin_10} />
+            <NavLink className={classes.side_nav__link} to={item.path}>
+                {item.name}
+            </NavLink>
+        </li>)
     return (
         <nav className={classes.sidebar}>
             <div className={classes.sidebar_user}>
                 <div className={classes.sidebar_user__info}>
+                    <img className={classes.sidebar_user__img} src={user.img} alt='user-img' />
                     <span className={classes.sidebar_user__name}>
-                        محمود الحسيني
-                    </span>
-                    <span className={classes.sidebar_user__mail}>
-                        test@gmail.com
+                        {user.user_name}
                     </span>
                 </div>
-                <img className={classes.sidebar_user__img} src={userImag} alt='user-img' />
             </div>
             <ul className={classes.side_nav}>
-                <li className={classes.side_nav__item}>
-                    <span className={classes.side_nav__link}>
-                        التقاير والاحصاييات
-                        <FontAwesomeIcon icon={faChartPie} className={classes.margin_10} />
-                    </span>
-                </li>
-                <li className={classes.side_nav__item}>
-                    <span className={classes.side_nav__link}>
-                        ادارة الصيدليات
-                        <FontAwesomeIcon icon={faBriefcaseMedical} className={classes.margin_10} />
-                    </span>
-                </li>
-                <li className={classes.side_nav__item}>
-                    <span className={classes.side_nav__link}>
-                        الشركات
-                        <FontAwesomeIcon icon={faBuilding} className={classes.margin_10} />
-                    </span>
-                </li>
-                <li className={classes.side_nav__item}>
-                    <span className={classes.side_nav__link}>
-                        الدول والمدن
-                        <FontAwesomeIcon icon={faHome} className={classes.margin_10} />
-                    </span>
-                </li>
+                {items}
             </ul>
 
         </nav >

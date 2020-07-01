@@ -31,14 +31,18 @@ const SimpleModal = (props) => {
     const [show, setShow] = useState(true);
 
     const handleClose = () => {
-        console.log(props);
         setShow(false);
         props.onClose();
     };
 
     const body = (
         <div style={modalStyle} className={classes.paper}>
-            <Form action={props.action} unit={props.unit} onSubmit={()=> { handleClose() } }/>
+            <Form
+                action={props.action}
+                unit={Object.keys(props.unit).length !== 0 ? props.unit : props.fields}
+                data={props.data}
+                onSubmit={() => { handleClose() }}
+            />
         </div>
     );
 

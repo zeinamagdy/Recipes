@@ -1,34 +1,62 @@
-import React, { useRef, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import * as classes from './Form.module.css'
-import { addUnit, updateUnit } from '../../store/actions';
 
+import * as actions from '../../store/actions'
+let [addUnit, updateUnit] = []
 const Form = (props) => {
-    const [task, setTask] = useState({})
-    const name_ar = useRef();
-    const name_en = useRef();
-    const description_ar = useRef();
-    const description_en = useRef();
+    const [unit, setUnit] = useState({})
+    let updatedItems = {}
+    useEffect(() => {
+        switch (props.data) {
+            case 'products':
+                [addUnit, updateUnit] = [actions.addProduct, actions.updateProduct]
+                break
+            default:
+                break
 
-    const actionUnitHandler = () => {
-        const newTask = {
-            "name_en": name_en.current.value,
-            "name_ar": name_ar.current.value,
-            "description_en": description_en.current.value,
-            "description_ar": description_ar.current.value,
-            "is_publish": "1",
-            "parent_id": "0"
         }
-        setTask(newTask)
+    })
+    
+    const changeHandler = (e, feild) => {
+        updatedItems[feild] = e.target.value
+    }
+    let formControls = []
+
+    if (Array.isArray(props.unit)) {
+        formControls = props.unit.map(item =>
+            <input
+                type='text'
+                key={item}
+                className={classes.form_input}
+                placeholder={item}
+                onChange={(e) => changeHandler(e, item)} />
+        )
+    } else {
+        for (let [key, value] of Object.entries(props.unit)) {
+            formControls.push(<input
+                type='text'
+                key={key}
+                className={classes.form_input}
+                placeholder={key}
+                defaultValue={value}
+                onChange={(e) => changeHandler(e, key)} />)
+        }
+    }
+    const actionUnitHandler = () => {
+        console.log('unit', updatedItems)
+        setUnit(updatedItems)
     }
 
     const submitHandler = (e) => {
         e.preventDefault()
         if (props.action === 'add') {
-            props.addUnit(task);
+            props.addUnit(unit, props.token, props.userId);
         } else if (props.action === 'update') {
-            const updatedTask = { ...task, id: props.unit.id }
-            props.updateUnit(updatedTask)
+            const updatedUnit = {
+                ...props.unit, ...unit
+            }
+            props.updateUnit(updatedUnit, props.token, props.userId)
         }
         props.onSubmit();
     }
@@ -36,39 +64,17 @@ const Form = (props) => {
     return (
         <div className={classes.form_container}>
             <form className={classes.form} onSubmit={(e) => submitHandler(e)}>
-                <input
-                    type='text'
-                    className={classes.form_input}
-                    placeholder='اسم الوحده باللغه العربية'
-                    ref={name_ar}
-                    defaultValue={props.unit.name_ar} />
-                <input
-                    type='text'
-                    className={classes.form_input}
-                    placeholder='اسم الوحده باللغه الانجليزية'
-                    ref={name_en}
-                    defaultValue={props.unit.name_en} />
-                <textarea
-                    type='text'
-                    className={classes.form_input}
-                    placeholder='وصف الوحدة باللغة العربية'
-                    ref={description_ar}
-                    defaultValue={props.unit.description_ar} />
-                <textarea
-                    type='text'
-                    className={classes.form_input}
-                    placeholder='وصف الوحدة باللغة الانجليزية'
-                    ref={description_en}
-                    defaultValue={props.unit.description_en} />
+                {formControls}
                 {props.action === 'add' ?
                     <button
                         className={classes.form_addBtn}
                         onClick={actionUnitHandler}>
-                        اضافه وحدة جديدة</button> :
+                        Add New
+                    </button> :
                     <button
                         className={classes.form_addBtn}
                         onClick={actionUnitHandler}>
-                        تعديل الوحدة
+                        Edite
                 </button>
                 }
             </form>
@@ -77,10 +83,16 @@ const Form = (props) => {
 }
 
 
-const dispatchToProps = dispatch => {
+const dispatchToProps = (dispatch) => {
     return {
-        addUnit: (unit) => { dispatch(addUnit(unit)) },
-        updateUnit: (unit) => { dispatch(updateUnit(unit)) }
+        addUnit: ( unit, token, userId) => { dispatch(addUnit( unit, token, userId)) },
+        updateUnit: (unit, token) => { dispatch(updateUnit(unit, token)) }
     }
 }
-export default connect(null, dispatchToProps)(Form)
+const stateMaptoProps = state => {
+    return {
+        token: state.authReducer.token,
+        userId: state.authReducer.userId
+    }
+}
+export default connect(stateMaptoProps, dispatchToProps)(Form)

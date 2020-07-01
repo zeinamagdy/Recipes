@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { fetchUnits, deleteUnit } from '../../store/actions'
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody';
@@ -12,28 +11,51 @@ import Modal from '../Modal/Modal'
 import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as classes from './DataTable.module.css'
+import * as actions from '../../store/actions'
 
+
+let [delUnit] = []
 const DataTable = props => {
     const [openForm, setOpenForm] = useState(false)
     const [actionFlag, setActionFlag] = useState('');
     const [unitData, setUnitData] = useState({})
-    const { getAllUnits } = props
+    const [items, setItems] = useState([]);
 
     useEffect(() => {
-        getAllUnits()
-    }, [getAllUnits])
+        setItems(props.items);
+        switch (props.data) {
+            case 'products':
+                [delUnit] = [actions.deleteProduct, actions.fetchProducts]
+                break
+            default:
+                break
+
+        }
+        if (props.searchKeyword !== '') {
+            const newItems = items.filter(item =>
+                item.name.includes(props.searchKeyword))
+            console.log('newList', newItems)
+            setItems(newItems);
+        }
+    }, [props.items, props.searchKeyword, props.data]);
+
 
     const addUnitHandler = () => {
         setOpenForm(true)
         setUnitData({})
         setActionFlag('add')
     }
-    
+
     const updateUnitHandler = (unit) => {
         setOpenForm(true)
         setUnitData(unit)
         setActionFlag('update')
     }
+    const header = props.tableHeader.map(item =>
+        <TableCell align="center" key={item}>{item}</TableCell>
+    )
+
+    console.log("items", items)
 
     return (
         <div className={classes.dataTable_container}>
@@ -41,37 +63,31 @@ const DataTable = props => {
                 <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center">الاجراء</TableCell>
-                            <TableCell align="center">وصف الوحدة</TableCell>
-                            <TableCell align="center">اسم الوحده باللغه الانجليزية</TableCell>
-                            <TableCell align="center">اسم الوحده باللغة العربية</TableCell>
-                            <TableCell align="center">كود الوحدة</TableCell>
+                            {header}
+                            <TableCell align="center"></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {props.units.map((unit) => (
-                            <TableRow key={unit.id}>
-                                <TableCell align="center" component="th" scope="unit">
+                        {items.map((product) => (
+                            <TableRow key={product.id}>
+                                <TableCell align="center">
+                                    {product.name}
+                                </TableCell>
+                                <TableCell align="center" >
+                                    {product.price}
+                                </TableCell>
+                                <TableCell align="center">
+                                    {product.quantity}
+                                </TableCell>
+                                <TableCell align="center" component="th" scope="product">
                                     <FontAwesomeIcon
                                         icon={faTrash}
                                         className={classes.table_iconDel}
-                                        onClick={() => props.deleteUnit(unit.id)} />
+                                        onClick={() => props.deleteUnit(product.id, props.token)} />
                                     <FontAwesomeIcon
                                         icon={faPencilAlt}
                                         className={classes.table_iconEdit}
-                                        onClick={() => updateUnitHandler(unit)} />
-                                </TableCell>
-                                <TableCell align="center">
-                                    {unit.description_ar}
-                                </TableCell>
-                                <TableCell align="center" >
-                                    {unit.name_en}
-                                </TableCell>
-                                <TableCell align="center">
-                                    {unit.name_ar}
-                                </TableCell>
-                                <TableCell align="center">
-                                    #{unit.id}
+                                        onClick={() => updateUnitHandler(product)} />
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -80,10 +96,17 @@ const DataTable = props => {
             </TableContainer>
             <div>
                 <button className={classes.table_addBtn} onClick={() => addUnitHandler()}>
-                    اضافة وحدة جديدة
+                    Add new
                 </button>
             </div>
-            {openForm ? <Modal action={actionFlag} unit={unitData} onClose={()=> setOpenForm(false)} /> : null}
+            {openForm ?
+                <Modal
+                    action={actionFlag}
+                    unit={unitData}
+                    data={props.data}
+                    fields={Object.keys(props.products[0])}
+                    onClose={() => setOpenForm(false)} />
+                : null}
         </div>
     );
 }
@@ -91,13 +114,16 @@ const DataTable = props => {
 
 const dispatchToProps = dispatch => {
     return {
-        getAllUnits: () => { dispatch(fetchUnits()) },
-        deleteUnit: (unitId) => { dispatch(deleteUnit(unitId)) }
+        deleteUnit: (id, token) => { dispatch(delUnit(id, token)) }
     }
 }
+
 const stateToProps = state => {
     return {
-        units: state.unitsReducer.units
+        products: state.productsReducer.products,
+        loading: state.productsReducer.loading,
+        token: state.authReducer.token,
+        userId: state.authReducer.userId
     }
 }
 export default connect(stateToProps, dispatchToProps)(DataTable)

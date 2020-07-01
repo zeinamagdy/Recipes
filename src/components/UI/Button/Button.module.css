@@ -1,0 +1,35 @@
+.button {
+    width: 100px;
+    border-radius: 25px;
+    border: transparent;
+    box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.06);
+    color: #f6fafd;
+    padding: 10px;
+    float: right;
+    margin-top: 20px;
+    font-size: 17px;
+    outline: none;
+    cursor: pointer;
+    
+}
+
+.button:first-of-type {
+    margin-left: 0;
+    padding-left: 0;
+}
+.button:disabled{
+    color:#ccc;
+    cursor: not-allowed;
+}
+.success {
+    background-color: #3ec67e;
+}
+
+.danger {
+    background-color: #944317;
+}
+.primary{
+    background-color:#2761a0;
+    width: 125px;
+
+}
