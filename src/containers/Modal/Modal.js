@@ -29,6 +29,7 @@ const SimpleModal = (props) => {
     const classes = useStyles();
     const [modalStyle] = useState(getModalStyle);
     const [show, setShow] = useState(true);
+    console.log('fields', props.fields);
 
     const handleClose = () => {
         setShow(false);
@@ -39,7 +40,8 @@ const SimpleModal = (props) => {
         <div style={modalStyle} className={classes.paper}>
             <Form
                 action={props.action}
-                unit={Object.keys(props.unit).length !== 0 ? props.unit : props.fields}
+                unit={props.unit}
+                fields={props.fields}
                 data={props.data}
                 onSubmit={() => { handleClose() }}
             />

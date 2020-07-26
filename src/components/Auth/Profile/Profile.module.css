@@ -1,0 +1,11 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    /* flex: 0 0 77%; */
+    align-items: center;
+    margin-top: 50px;
+}
+
+.from_imgUploader {
+    width: 77%;
+}

@@ -1,5 +1,6 @@
 import * as actionTypes from '../actions/actionTypes'
 import { updatedObject } from '../../shared/utility'
+
 const intialState = {
     token: null,
     userId: null,
@@ -29,9 +30,6 @@ const authLogout = (state, action) => {
     })
 }
 const setAuthRedirect = (state, action) => {
-    console.log('red reducer', updatedObject(state, {
-        authRedirectpath: action.path
-    }))
     return updatedObject(state, {
         authRedirectpath: action.path
     })

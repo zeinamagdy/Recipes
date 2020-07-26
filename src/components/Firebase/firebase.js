@@ -1,35 +1,19 @@
 import app from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
+import 'firebase/storage'
+import 'firebase/firestore'
+import { config } from './firebaseConfig'
 
-
-const prodConfig = {
-    apiKey: process.env.REACT_APP_PROD_API_KEY,
-    authDomain: process.env.REACT_APP_PROD_AUTH_DOMAIN,
-    databaseURL: process.env.REACT_APP_PROD_DATABASE_URL,
-    projectId: process.env.REACT_APP_PROD_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_PROD_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_PROD_MESSAGING_SENDER_ID,
-};
-
-const devConfig = {
-    apiKey: process.env.REACT_APP_DEV_API_KEY,
-    authDomain: process.env.REACT_APP_DEV_AUTH_DOMAIN,
-    databaseURL: process.env.REACT_APP_DEV_DATABASE_URL,
-    projectId: process.env.REACT_APP_DEV_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_DEV_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_DEV_MESSAGING_SENDER_ID,
-};
-
-const config =
-    process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
-
-    console.log('apiKey', process.env)
 class Firebase {
     constructor() {
         app.initializeApp(config);
         this.auth = app.auth();
+        this.db = app.database();
+        this.storage = app.storage()
     }
     // *** Auth API ***
+
 
     doCreateUserWithEmailAndPassword = (email, password) =>
         this.auth.createUserWithEmailAndPassword(email, password);
@@ -42,6 +26,16 @@ class Firebase {
     doPasswordUpdate = password => this.auth.currentUser.updatePassword(password);
 
     doSignOut = () => this.auth.signOut();
+    current = () => this.auth.currentUser
+
+    // *** User API ***
+
+    user = uid => this.db.ref(`/users/${uid}`);
+    updateUser = (uid, userInfo) => this.db.ref(`/users/${uid}`).set(userInfo)
+    users = () => this.db.ref('users');
+    imgUpload = img => this.storage.ref(`/images/${img.name}`).put(img)
+    getImg = img => this.storage.ref(`/images/${img}`).getDownloadURL()
+    // getImage = imgName => this.storage.ref("images").child(imgName).getDownloadURL()
 
 }
 

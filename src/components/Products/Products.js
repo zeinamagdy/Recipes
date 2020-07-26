@@ -1,55 +1,39 @@
 import React, { useEffect, useState, Fragment } from 'react'
 import { fetchProducts } from '../../store/actions'
 import { connect } from 'react-redux'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faSearch } from "@fortawesome/free-solid-svg-icons"
-import Nav from '../../containers/Nav/Nav';
-import Header from '../../containers/Header/Header'
-import DataTable from '../../containers/DataTable/DataTable'
-import * as classes from './products.module.css'
+import AdminPage from '../../containers/AdminPage/AdminPage'
+import Spinner from '../UI/spinner/spinner'
+import { withFirebase } from '../Firebase'
+
 
 const Products = (props) => {
     const { getAllProducts } = props
     const title = 'Products'
     const [searchInput, setSearchInput] = useState('')
+    const searchField = 'name'
     useEffect(() => {
         getAllProducts(props.token, props.userId)
-
     }, [getAllProducts, props.token, props.userId])
 
-    const header = ['Name', 'Price', 'Quantity']
 
     const searchHandler = (e) => {
-        console.log('value', e.target.value)
         setSearchInput(e.target.value)
     }
+    let page = <Spinner />
+    page = props.products.length === 0 ? <Spinner /> :
+        <AdminPage
+            title={title}
+            data={props.products}
+            searchField={searchField}
+            searchInput={searchInput}
+            searchHandler={searchHandler}
+            formFeilds={Object.keys(props.products[0]).filter(item => item !== 'id')}
+            header={Object.keys(props.products[0]).filter(item => item !== 'id' && item !== 'photo')}
+        />
     return (
-        <Fragment>
-            <Nav />
-            <div className="main">
-                <Header />
-                <div className={classes.content}>
-                    <div className={classes.content_header}>
-                        <div className={classes.content_title}>
-                            {title}
-                        </div>
-                        <div className={classes.content_search}>
-                            <input
-                                type='text'
-                                className={classes.content_search_input}
-                                placeholder='Search in products...'
-                                onChange={(e) => searchHandler(e)} />
-                            <FontAwesomeIcon icon={faSearch} />
-                        </div>
-                    </div>
-                    <DataTable
-                        items={props.products}
-                        searchKeyword={searchInput}
-                        tableHeader={header}
-                        data='products' />
-                </div>
-            </div>
-        </Fragment>
+        <Fragment>{page}</Fragment>
+
+
     )
 
 }
@@ -67,4 +51,4 @@ const stateToProps = state => {
         userId: state.authReducer.userId,
     }
 }
-export default connect(stateToProps, dispatchToProps)(Products)
+export default withFirebase(connect(stateToProps, dispatchToProps)(Products))

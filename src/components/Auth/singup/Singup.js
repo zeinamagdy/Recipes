@@ -1,12 +1,8 @@
 import React, { useState } from 'react'
-import { authSuccess } from '../../../store/actions/auth';
-import { withFirebase } from '../../../components/Firebase';
+import { withFirebase } from '../../../components/Firebase'
 import Button from '../../UI/Button/Button'
 import * as Routes from '../../../constants/routes'
 import * as classes from '../Auth.module.css'
-
-
-
 
 const Singup = (props) => {
     const intialState = {
@@ -17,7 +13,6 @@ const Singup = (props) => {
         error: '',
     }
     const [controls, setControls] = useState(intialState)
-
     const isInvalid =
         controls.passwordOne !== controls.passwordTwo ||
         controls.passwordOne === '' ||
@@ -27,15 +22,23 @@ const Singup = (props) => {
     const onChange = event => {
         setControls({ ...controls, [event.target.name]: event.target.value });
     };
+  
     const onSubmit = event => {
         event.preventDefault();
-
         const { username, email, passwordOne } = controls;
         console.log('data', { username, email, passwordOne })
         props.firebase
             .doCreateUserWithEmailAndPassword(email, passwordOne)
             .then(authUser => {
-                console.log('authUser', authSuccess)
+                // Create a user in your Firebase realtime database
+                return props.firebase
+                    .user(authUser.user.uid)
+                    .set({
+                        username,
+                        email,
+                    });
+            })
+            .then(() => {
                 props.history.push(Routes.ADMIN)
                 setControls(intialState)
             })
@@ -81,6 +84,7 @@ const Singup = (props) => {
                     type="password"
                     placeholder="Confirm Password"
                 />
+              
                 {/* disabled={isInvalid} */}
                 {/* <button type="submit">Sign Up</button> */}
                 <Button btnType="primary">Sign Up</Button>

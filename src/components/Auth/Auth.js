@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Fragment } from 'react'
+import React, { useRef, useEffect, Fragment } from 'react'
 import { Link, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import * as actions from '../../store/actions'
@@ -11,7 +11,6 @@ import * as Routes from '../../constants/routes'
 const Login = (props) => {
   const email = useRef('')
   const password = useRef('')
-  const [isSingUp, setIsSingUp] = useState(false)
   const { isAuthicated, authRedirectpath, setAuthRedirectPath } = props
   useEffect(() => {
     if (isAuthicated && authRedirectpath !== '/')
@@ -21,7 +20,7 @@ const Login = (props) => {
   const login = (event) => {
     event.preventDefault()
     console.log('email', email.current.value)
-    props.onAuth(email.current.value, password.current.value, isSingUp)
+    props.onAuth(email.current.value, password.current.value)
   }
   let form = (<div className={classes.auth}>
     <form className={classes.auth_form} onSubmit={(e) => login(e)}>
@@ -38,6 +37,9 @@ const Login = (props) => {
       <div className={classes.singup}>
         <span>Don't Have an account?</span>
         <Link to={Routes.SIGN_UP} className={classes.singup_link}>Sing Up</Link>
+        <Link to={Routes.PASSWORD_FORGET} className={classes.singup_link}>Forgot Password?</Link>
+        <Link to={Routes.PASSWORD_CHANGE} className={classes.singup_link}>Change Password</Link>
+
       </div>
     </form>
   </div>)

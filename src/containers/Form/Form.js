@@ -1,50 +1,87 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import * as classes from './Form.module.css'
-
 import * as actions from '../../store/actions'
+import ImgUploader from '../../components/UI/ImgUploader/ImgUploader'
+import { withFirebase } from '../../components/Firebase'
+
 let [addUnit, updateUnit] = []
 const Form = (props) => {
     const [unit, setUnit] = useState({})
+    const [img, setImg] = useState([])
     let updatedItems = {}
     useEffect(() => {
         switch (props.data) {
-            case 'products':
+            case 'Products':
                 [addUnit, updateUnit] = [actions.addProduct, actions.updateProduct]
                 break
             default:
                 break
 
         }
-    })
-    
+        if (props.unit.photo !== '')
+            props.firebase.getImage(props.unit['photo'])
+                .then(url => {
+                    setImg([url])
+                }).catch(err => {
+                    console.log('error', err)
+                })
+    }, [props.unit.photo, props.data, props.unit, props.firebase])
+    const onUploadImg = (event) => {
+        let img = event[0]
+        let imgName = 'products_' + props.userId + '_' + Date.now()
+        let blob = img.slice(0, img.size, 'image/jpg');
+        let newImg = new File([blob], imgName, { type: 'image/jpg' });
+        updatedItems['photo'] = imgName
+        props.firebase.imgUpload(newImg)
+
+    }
     const changeHandler = (e, feild) => {
         updatedItems[feild] = e.target.value
     }
-    let formControls = []
 
-    if (Array.isArray(props.unit)) {
-        formControls = props.unit.map(item =>
-            <input
-                type='text'
-                key={item}
-                className={classes.form_input}
-                placeholder={item}
-                onChange={(e) => changeHandler(e, item)} />
-        )
-    } else {
+    let formControls = []
+    console.log('unit', props.unit)
+    if (Object.keys(props.unit).length !== 0) {
         for (let [key, value] of Object.entries(props.unit)) {
-            formControls.push(<input
-                type='text'
-                key={key}
-                className={classes.form_input}
-                placeholder={key}
-                defaultValue={value}
-                onChange={(e) => changeHandler(e, key)} />)
+            if (key !== 'id')
+                if (key === 'photo') {
+                    formControls.push(<ImgUploader key={key} uplodHandler={onUploadImg} src={img} />)
+                } else {
+                    formControls.push(<input
+                        type='text'
+                        key={key}
+                        className={classes.form_input}
+                        placeholder={key}
+                        defaultValue={value}
+                        onChange={(e) => changeHandler(e, key)} />)
+                }
+        }
+    } else {
+        for (let i = 0; i < props.fields.length; i++) {
+            updatedItems[props.fields[i]] = ''
+        }
+        for (let key of Object.keys(updatedItems)) {
+            if (key === 'photo') {
+                formControls.push(<ImgUploader uplodHandler={onUploadImg} />)
+            } else {
+                formControls.push(
+                    <input
+                        type='text'
+                        key={key}
+                        placeholder={key}
+                        className={classes.form_input}
+                        onChange={(e) => changeHandler(e, key)} />
+
+                )
+            }
+
+
         }
     }
+    console.log('form controls', formControls);
+
     const actionUnitHandler = () => {
-        console.log('unit', updatedItems)
         setUnit(updatedItems)
     }
 
@@ -74,7 +111,7 @@ const Form = (props) => {
                     <button
                         className={classes.form_addBtn}
                         onClick={actionUnitHandler}>
-                        Edite
+                        Edit
                 </button>
                 }
             </form>
@@ -85,7 +122,7 @@ const Form = (props) => {
 
 const dispatchToProps = (dispatch) => {
     return {
-        addUnit: ( unit, token, userId) => { dispatch(addUnit( unit, token, userId)) },
+        addUnit: (unit, token, userId) => { dispatch(addUnit(unit, token, userId)) },
         updateUnit: (unit, token) => { dispatch(updateUnit(unit, token)) }
     }
 }
@@ -95,4 +132,4 @@ const stateMaptoProps = state => {
         userId: state.authReducer.userId
     }
 }
-export default connect(stateMaptoProps, dispatchToProps)(Form)
+export default withFirebase(connect(stateMaptoProps, dispatchToProps)(Form))

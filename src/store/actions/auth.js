@@ -38,6 +38,7 @@ export const checkAuthTimeout = (experationTime, dispatch) => {
     }
 }
 export const auth = (mail, password, isSingUp) => {
+    console.log('login')
     return dispatch => {
         dispatch(authStart())
         const authData = {
@@ -54,6 +55,7 @@ export const auth = (mail, password, isSingUp) => {
                 localStorage.setItem('expirattionTime', expirattionTime)
                 localStorage.setItem('token', response.data.idToken)
                 localStorage.setItem('userId', response.data.localId)
+                console.log('response login', response)
                 dispatch(authSuccess(response.data.idToken, response.data.localId))
                 dispatch(checkAuthTimeout(response.data.expiresIn))
             })
@@ -65,7 +67,6 @@ export const auth = (mail, password, isSingUp) => {
 }
 
 export const setAuthRedirectPath = (path) => {
-    console.log('redirect',path)
     return {
         type: action.SET_Auth_REDIRECT_PATH,
         path: path

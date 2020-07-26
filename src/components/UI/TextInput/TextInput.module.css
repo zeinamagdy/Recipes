@@ -1,0 +1,16 @@
+.form_input, .form_input:focus {
+    border-color: transparent;
+    padding: 8px;
+    outline: none;
+    background: #fff;
+    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    /* padding: 20px 0; */
+    margin: 10px auto;
+    transition: all 0.3s ease-in;
+}
+
+
+.width_75{
+    width: 75%;
+}

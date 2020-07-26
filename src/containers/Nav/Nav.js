@@ -1,19 +1,34 @@
-import React from 'react';
-import userImag from '../../assests/users/user.jpg'
-import { NavLink } from 'react-router-dom'
-import { faHome, faChartPie } from "@fortawesome/free-solid-svg-icons";
+import React, { useEffect, useState } from 'react';
+import defaultUserImg from '../../assests/users/user.png'
+import { connect } from 'react-redux'
+import { NavLink, useHistory } from 'react-router-dom'
+import { withFirebase } from '../../components/Firebase'
+import { faHome, faChartPie, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as classes from './Nav.module.css'
 
-const Nav = () => {
-    const user = {
-        user_name: 'Zeinab Mohamed',
-        email: 'zainab@test.com',
-        img: userImag
+const Nav = props => {
+    const [user, setUser] = useState({})
+    const [img, setImg] = useState(defaultUserImg)
+    let history = useHistory();
+    useEffect(() => {
+        props.firebase.user(props.userId).once('value', snapshot => {
+            const userObject = snapshot.val();
+            setUser(userObject)
+            let img = userObject.img
+            props.firebase.getImg(img).then(url => {
+                setImg(url)
+            })
+            console.log('user', userObject);
+        });
+    }, [])
+
+    const updateUSer = () => {
+        history.push({ pathname: '/profile', state: { userInfo: user } })
     }
     const navItems = [
         { name: 'Propducts', icon: faChartPie, path: '/' },
-        { name: 'Users', icon: faHome, path: '/auth' }
+        { name: 'Users', icon: faHome, path: '/users' }
     ]
     const items = navItems.map(item =>
         <li className={classes.side_nav__item} key={item.name}>
@@ -26,10 +41,17 @@ const Nav = () => {
         <nav className={classes.sidebar}>
             <div className={classes.sidebar_user}>
                 <div className={classes.sidebar_user__info}>
-                    <img className={classes.sidebar_user__img} src={user.img} alt='user-img' />
+                    <img className={classes.sidebar_user__img} src={img} alt='user-img' />
                     <span className={classes.sidebar_user__name}>
-                        {user.user_name}
+                        {user.username}
                     </span>
+                    <span>
+                        <FontAwesomeIcon
+                            icon={faPencilAlt}
+                            className={classes.side_nav__edit_icon}
+                            onClick={updateUSer} />
+                    </span>
+
                 </div>
             </div>
             <ul className={classes.side_nav}>
@@ -40,6 +62,11 @@ const Nav = () => {
     )
 
 }
+const stateMapToProps = state => {
+    return {
+        userId: state.authReducer.userId,
 
+    }
+}
 
-export default Nav
+export default withFirebase(connect(stateMapToProps)(Nav))

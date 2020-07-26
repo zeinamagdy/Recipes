@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody';
+import TablePagination from '@material-ui/core/TablePagination'
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
@@ -19,13 +20,17 @@ const DataTable = props => {
     const [openForm, setOpenForm] = useState(false)
     const [actionFlag, setActionFlag] = useState('');
     const [unitData, setUnitData] = useState({})
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState(props.items);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(4);
 
     useEffect(() => {
         setItems(props.items);
         switch (props.data) {
-            case 'products':
+            case 'Products':
                 [delUnit] = [actions.deleteProduct, actions.fetchProducts]
+                break
+            case 'Users':
                 break
             default:
                 break
@@ -33,12 +38,19 @@ const DataTable = props => {
         }
         if (props.searchKeyword !== '') {
             const newItems = items.filter(item =>
-                item.name.includes(props.searchKeyword))
-            console.log('newList', newItems)
+                item[props.searchField].includes(props.searchKeyword))
             setItems(newItems);
         }
-    }, [props.items, props.searchKeyword, props.data]);
+    }, [props.items, props.searchKeyword, props.data, items, props.searchField]);
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
 
     const addUnitHandler = () => {
         setOpenForm(true)
@@ -51,11 +63,36 @@ const DataTable = props => {
         setUnitData(unit)
         setActionFlag('update')
     }
+
     const header = props.tableHeader.map(item =>
-        <TableCell align="center" key={item}>{item}</TableCell>
+        <TableCell
+            style={{ textTransform: 'capitalize', fontWeight: 'bold' }}
+            align="center"
+            key={item}>
+            {item}
+        </TableCell>
     )
 
-    console.log("items", items)
+    const tableBody = items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(item =>
+        <TableRow key={item.id}>
+            {props.tableHeader.map(el =>
+                <TableCell align="center" key={el} >
+                    {item[el]}
+                </TableCell>
+            )
+            }
+            <TableCell align="center" component="th" scope="product">
+                <FontAwesomeIcon
+                    icon={faTrash}
+                    className={classes.table_iconDel}
+                    onClick={() => props.deleteUnit(item.id, props.token)} />
+                <FontAwesomeIcon
+                    icon={faPencilAlt}
+                    className={classes.table_iconEdit}
+                    onClick={() => updateUnitHandler(item)} />
+            </TableCell>
+        </TableRow >
+    )
 
     return (
         <div className={classes.dataTable_container}>
@@ -68,33 +105,20 @@ const DataTable = props => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items.map((product) => (
-                            <TableRow key={product.id}>
-                                <TableCell align="center">
-                                    {product.name}
-                                </TableCell>
-                                <TableCell align="center" >
-                                    {product.price}
-                                </TableCell>
-                                <TableCell align="center">
-                                    {product.quantity}
-                                </TableCell>
-                                <TableCell align="center" component="th" scope="product">
-                                    <FontAwesomeIcon
-                                        icon={faTrash}
-                                        className={classes.table_iconDel}
-                                        onClick={() => props.deleteUnit(product.id, props.token)} />
-                                    <FontAwesomeIcon
-                                        icon={faPencilAlt}
-                                        className={classes.table_iconEdit}
-                                        onClick={() => updateUnitHandler(product)} />
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {tableBody}
                     </TableBody>
                 </Table>
             </TableContainer>
             <div>
+                <TablePagination
+                    rowsPerPageOptions={[4, 8, 12]}
+                    component="div"
+                    count={items.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
                 <button className={classes.table_addBtn} onClick={() => addUnitHandler()}>
                     Add new
                 </button>
@@ -104,7 +128,7 @@ const DataTable = props => {
                     action={actionFlag}
                     unit={unitData}
                     data={props.data}
-                    fields={Object.keys(props.products[0])}
+                    fields={props.formFields}
                     onClose={() => setOpenForm(false)} />
                 : null}
         </div>

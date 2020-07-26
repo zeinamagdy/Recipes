@@ -33,5 +33,5 @@
     padding: 8px;
     box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.06);
     outline: none;
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
 }

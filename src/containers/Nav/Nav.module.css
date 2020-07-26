@@ -15,6 +15,7 @@
     border-radius: 10px;
     padding: 15px;
     display: flex;
+    width: 85%;
 }
 
 .sidebar_user__img {
@@ -80,4 +81,9 @@
 
 .margin_10 {
     margin-right: 10px;
+}
+.side_nav__edit_icon{
+    margin-left: 30px;
+    cursor: pointer;
+    
 }

@@ -16,3 +16,8 @@ export {
     deleteProduct
 } from './product'
 
+
+export {
+    fetchUsers,
+    updateUser
+} from './users'
