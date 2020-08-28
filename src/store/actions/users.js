@@ -1,5 +1,5 @@
 import *  as actionTypes from './actionTypes';
-import Firebase from '../../components/Firebase'
+import Firebase from '../../common/Firebase'
 
 export const fetchUserssStart = () => {
     return {

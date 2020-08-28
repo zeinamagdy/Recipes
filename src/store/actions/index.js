@@ -13,7 +13,8 @@ export {
     fetchProducts,
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    clearPopUp
 } from './product'
 
 
@@ -21,3 +22,7 @@ export {
     fetchUsers,
     updateUser
 } from './users'
+
+export{
+    fetchRecipes
+}from './recipes'

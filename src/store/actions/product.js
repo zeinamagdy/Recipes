@@ -10,14 +10,14 @@ export const fetchProductsStart = () => {
 export const fetchProductsSuccess = data => {
     return {
         type: actionTypes.FETCH_PRODUCTS_SUCCESS,
-        products: data
+        products: data,
     }
 }
-export const addProductSuccess = (data, id) => {
+export const addProductSuccess = (data) => {
     return {
         type: actionTypes.ADD_PRODUCT_SUCCESS,
-        id: id,
-        product: data
+        product: data,
+
     }
 
 }
@@ -25,7 +25,8 @@ export const updateUnitScuccess = (id, product) => {
     return {
         type: actionTypes.UPDATE_PRODUCT_SUCCESS,
         id: id,
-        product: product
+        product: product,
+
     }
 }
 export const deleteProductScuccess = id => {
@@ -35,10 +36,17 @@ export const deleteProductScuccess = id => {
     }
 
 }
+
+
 export const fetchProductsFail = (error) => {
     return {
         type: actionTypes.FETCH_PRODUCTS_FAIL,
         error: error
+    }
+}
+export const clearMessage = () => {
+    return {
+        type: actionTypes.CLEAR_MESSAGE
     }
 }
 export const fetchProducts = (token, userId) => {
@@ -63,11 +71,7 @@ export const addProduct = (product, token, userId) => {
     return dispatch => {
         axios.post('/products.json?auth=' + token, product)
             .then(response => {
-                let fetchedDtata = []
-                for (let key in response.data) {
-                    fetchedDtata.push({ ...response.data[key], id: key })
-                }
-                dispatch(fetchProductsSuccess(product, response.data.name))
+                dispatch(addProductSuccess(product))
             })
             .catch(err => {
                 dispatch(fetchProductsFail(err))
@@ -95,4 +99,10 @@ export const deleteProduct = (id, token) => {
                 console.log('error', error)
             }))
     }
-} 
+}
+
+export const clearPopUp = () => {
+    return dispatch => {
+        dispatch(clearMessage())
+    }
+}
