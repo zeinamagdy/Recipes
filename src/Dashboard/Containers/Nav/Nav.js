@@ -22,7 +22,6 @@ const Nav = props => {
             })
         });
     }, [props.userId, props.firebase])
-    console.log('nav');
     const updateUSer = () => {
         history.push({ pathname: '/profile', state: { userInfo: user } })
     }

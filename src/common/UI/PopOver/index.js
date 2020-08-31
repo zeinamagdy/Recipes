@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
-import { FacebookShareButton, TwitterShareButton, TwitterIcon, FacebookIcon } from "react-share";
+import {
+    FacebookShareButton,
+    TwitterShareButton,
+    WhatsappShareButton,
+    FacebookMessengerShareButton,
+    FacebookMessengerIcon,
+    WhatsappIcon,
+    TwitterIcon,
+    FacebookIcon
+} from "react-share";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,7 +36,7 @@ export default function SimplePopover(props) {
         setAnchorEl(null);
         // setOpen(false)
     };
-    
+
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
@@ -56,6 +65,16 @@ export default function SimplePopover(props) {
                     >
                         <FacebookIcon size={32} round />
                     </FacebookShareButton>
+
+                    <FacebookMessengerShareButton
+                        hashtag="React"
+                        url={shareUrl}
+                        quote={title}
+                        onShareWindowClose={handleClose}
+                    >
+                        <FacebookMessengerIcon size={32} round />
+                    </FacebookMessengerShareButton>
+
                     <TwitterShareButton
                         hashtag="React"
                         url={shareUrl}
@@ -64,6 +83,15 @@ export default function SimplePopover(props) {
                     >
                         <TwitterIcon size={32} round />
                     </TwitterShareButton>
+
+                    <WhatsappShareButton
+                        hashtag="React"
+                        url={shareUrl}
+                        quote={title}
+                        onShareWindowClose={handleClose}
+                    >
+                        <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
 
                 </Typography>
             </Popover>

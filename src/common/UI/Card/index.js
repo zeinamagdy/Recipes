@@ -64,7 +64,6 @@ const RecipeReviewCard = (props) => {
     }
 
     // title = "Shrimp and Chorizo Paella"
-    console.log('props card', props);
     const cardStyle = [classes.root, styles.margin_30_px]
     return (
         <Card className={cardStyle.join(' ')}>

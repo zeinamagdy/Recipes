@@ -1,18 +1,21 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { fetchRecipes } from '../../../store/actions'
-import Nav from '../../common/Nav'
+import TabPanel from '../../common/Tabs'
 import Card from '../../../common/UI/Card'
-import * as classes from './Home.module.css'
+import Footer from '../../common/Footer'
 import data from '../../../data.json'
+
 
 
 const Home = (props) => {
     // useEffect(() => {
     //     props.getAllRecipes()
     // }, [props])
-
-    console.log('recipes', data.recipes);
+    const dataLength = 91
+    const dataCount = dataLength % 9 === 0 ? dataLength / 9 : Math.floor(dataLength / 9) + 1;
+    const itemsPerPage = data.recipes.length
+    console.log('recipes with paginagtion', data.recipes);
     let cards = []
 
 
@@ -26,20 +29,8 @@ const Home = (props) => {
     )
     return (
         <Fragment>
-            <Nav />
-            <div className={classes.main}>
-                {props.recipes.map(item =>
-                    <Card
-                        key={item.extendedIngredients[0].id}
-                        title={item.title}
-                        image={item.image}
-                        summary={item.summary}
-                        steps={item.instructions} />
-                )}
-
-                {cards}
-            </div>
-
+            <TabPanel tab1={cards} itemsPerPage={itemsPerPage} count={dataCount} />
+            <Footer />
         </Fragment>)
 }
 const dispatchMapToProps = dispatch => {
